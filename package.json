@@ -1,13 +1,16 @@
 {
   "name": "design-canvas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
+  "dependencies": {
+    "zod": "4.6.7"
+  },
   "procs": {
     "src": "src",
     "label": "Design canvas",
     "icon": "ph-pen-nib",
-    "description": "An infinite canvas of HTML artboards for designing screens and their states in rows by flow: pages, data templates, components, comments, stickies, in-place text editing and named versions; the agent plans, draws and edits artboards through designCanvas functions.",
-    "configuration": { "settings": ["designCanvas.root"] }
+    "description": "Speca's Design canvas in Hyper, the same editor: an infinite canvas of HTML artboards for screens and their states in rows by flow, with the floating selection bar, alike elements, the properties panel, comments to the agent, versions and the draft, prototypes; the agent plans, draws and edits it through designCanvas functions.",
+    "configuration": { "settings": ["designCanvas.locale"] }
   }
 }

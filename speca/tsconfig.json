@@ -1,0 +1,14 @@
+{
+  "//": "Not Speca's file: the one line that lets Speca's design-canvas plugin (copied verbatim below) import \"speca/sdk\" — Speca resolves the same specifier with the same tsconfig paths. Here it is the Hyper stand-in, ../sdk/index.ts.",
+  "compilerOptions": {
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["bun"],
+    "paths": { "speca/sdk": ["../sdk/index.ts"] }
+  }
+}

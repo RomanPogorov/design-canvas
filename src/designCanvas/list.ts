@@ -1,19 +1,17 @@
-import { readdir } from "node:fs/promises";
+import * as store from "../../sdk/store.ts";
+import { agentWho } from "../../sdk/agent.ts";
 
 /**
- * Lists the design canvases in the designs directory: name, title, artboard count, open comments, last change.
- *
- * Use to find a canvas to continue (pass its name to designCanvas.read / write) or to show the person what exists.
+ * Lists design canvases — this agent's (or all, with `all`): id, title, artboards, waiting ones, open comments, draft edits.
+ * @param opts.all Every design canvas of the instance, not only this agent's. @default false
  */
-export default async function (ctx: Context, _session: Session | null, _opts: {} = {}): Promise<Array<{ name: string; title: string; boards: number; waiting: number; comments: number; updatedAt: string; url: string }>> {
-    const root = await ctx.fns.designCanvas.dir({});
-    const out = [];
-    for (const n of await readdir(root).catch(() => [] as string[])) {
-        if (!/^[A-Za-z0-9_-]{1,80}$/.test(n)) continue;
-        const c = await ctx.fns.designCanvas.load({ name: n }).catch(() => null);
-        if (!c) continue;
-        out.push({ name: c.name, title: c.title, boards: c.order.length, waiting: c.order.filter((f) => c.boards[f]?.pending).length,
-            comments: Object.values(c.comments).filter((k) => !k.resolved).length, updatedAt: c.updatedAt ?? "", url: `/designCanvas/${c.name}` });
-    }
-    return out.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+export default async function (ctx: Context, _session: Session | null, opts: {
+    /** Every design canvas. */ all?: boolean;
+} = {}): Promise<Array<{ tabId: string; title: string; boards: number; waiting: number; comments: number; draftEdits: number; version: number; url: string }>> {
+    const who = await agentWho(ctx);
+    const rows = await store.listTabs(ctx, !opts.all && who.agentId ? { agentId: who.agentId } : {});
+    return Promise.all(rows.map(async (r) => {
+        const order: string[] = r.state?.order ?? [];
+        return { tabId: r.id, title: r.title, boards: order.length, waiting: order.filter((f) => r.state.boards?.[f]?.pending).length, comments: (await store.listComments(ctx, r.id, { open: true })).length, draftEdits: r.draft_edits, version: r.version, url: `/designCanvas/t/${r.id}` };
+    }));
 }

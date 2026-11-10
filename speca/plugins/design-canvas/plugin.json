@@ -1,0 +1,12 @@
+{
+  "id": "design-canvas",
+  "version": "1.0.0",
+  "name": { "en": "Design canvas", "ru": "Дизайн-холст" },
+  "description": {
+    "en": "An infinite canvas of artboards for designing screens and their states: every state is its own artboard, laid out in rows by flow. Select any element, edit its text in place, ask the agent about exactly that element.",
+    "ru": "Бесконечный холст с артбордами для дизайна экранов и их состояний: каждое состояние — свой артборд, рядами по сценарию. Выбирайте любой элемент, правьте текст на месте, спрашивайте агента ровно про этот элемент."
+  },
+  "icon": "penTool",
+  "by": "Speca",
+  "category": "canvas"
+}

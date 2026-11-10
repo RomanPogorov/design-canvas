@@ -1,17 +1,20 @@
 /**
- * Shows a design canvas — its artboards in rows by flow, pages, notes and comments — as a running editor in a frame.
+ * Shows a design canvas — its artboards in rows by flow, pages, notes, comments, the properties panel, the version chip
+ * and the prototype buttons — as Speca's running editor in a frame.
  *
- * Use for the address of a design canvas: `/rpc/designCanvas.page?{"name":"onboarding"}` — what the
- * `designCanvas.board` canvas kind opens, a chat link or a browser tab. The editor is the plugin's own page
- * (/designCanvas/<name>); it saves the person's edits and follows the agent's.
+ * The address of a design canvas: `/rpc/designCanvas.page?{"tabId":"dc_…"}` — what the `designCanvas.board` canvas
+ * kind opens, a chat link or a browser tab. The editor is the plugin's page /designCanvas/t/<tabId>.
  * @view
- * @param opts.name The canvas name (from designCanvas.open or designCanvas.list).
+ * @param opts.tabId The design canvas id.
  */
 export default async function (ctx: Context, _session: Session | null, opts: {
-    /** The canvas name. */
-    name: string;
+    /** The design canvas id. */
+    tabId: string;
 }): Promise<string> {
-    const name = String(opts.name ?? "").trim();
-    if (!/^[A-Za-z0-9_-]{1,80}$/.test(name)) throw new Error("designCanvas.page: name is a canvas name (letters, digits, - and _)");
-    return ctx.fns.rpc.frame({ src: `/designCanvas/${encodeURIComponent(name)}`, title: `Design canvas ${name}` });
+    const id = String(opts.tabId ?? "").trim();
+    if (!/^dc_[A-Za-z0-9]{1,40}$/.test(id)) throw new Error("designCanvas.page: tabId is a design canvas id (dc_…, from designCanvas.open)");
+    // rpc.frame's markup, made to fill the tab whatever the panel's own rules (an unlayered `iframe` rule left it 150px
+    // tall, the view's wrapper its content's height)
+    const esc = (text: string) => ctx.fns.w.escape({ text });
+    return `<style>:has(> .rpc-view > [data-dc-host]), .rpc-view:has(> [data-dc-host]) { height: 100%; }</style><div class="rpc-frame" data-rpc-frame data-dc-host style="height:100%;min-height:480px"><iframe src="/designCanvas/t/${esc(encodeURIComponent(id))}" title="Design canvas" loading="eager" allow="clipboard-read; clipboard-write" style="display:block;width:100%;height:100%;border:0"></iframe></div>`;
 }

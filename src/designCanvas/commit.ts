@@ -1,27 +1,18 @@
-import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import * as store from "../../sdk/store.ts";
+import { needTab } from "../../sdk/agent.ts";
 
 /**
- * Saves the current state of a design canvas as a named version.
- *
- * Use when the person asks to save or snapshot a version, and before trying another direction: name it after the
- * idea ("Bottom tabs, cards") so the person can compare and bring it back (designCanvas.restore). Ordinary edits
- * need no version. Returns the version number.
- * @param opts.name The canvas name.
- * @param opts.label A short name for the version, e.g. the idea it holds.
+ * Saves the canvas's draft as a new named version — when the person asks to save or snapshot one, and before you try
+ * another direction (name it after the idea, so the person can compare and bring it back). Ordinary edits need no
+ * commit: they stay in the draft («Черновик · N правок»), which the person sees and can undo. Speca's canvas_commit.
+ * @param opts.tabId The design canvas id.
+ * @param opts.name The version's name, e.g. "Bottom tabs, cards".
  */
 export default async function (ctx: Context, _session: Session | null, opts: {
-    /** The canvas name. */
-    name: string;
-    /** A short name for the version. */
-    label?: string;
-}): Promise<{ version: number; label: string }> {
-    const c = await ctx.fns.designCanvas.load({ name: opts.name });
-    if (!c) throw new Error(`designCanvas.commit: no canvas "${opts.name}"`);
-    const p = await ctx.fns.designCanvas.paths({ name: c.name });
-    const last = (await ctx.fns.designCanvas.versions({ name: c.name }))[0]?.version ?? 0;
-    const version = last + 1, label = String(opts.label ?? "").trim().slice(0, 200) || `Version ${version}`;
-    await mkdir(p.versions, { recursive: true });
-    await Bun.write(join(p.versions, `${String(version).padStart(4, "0")}.json`), JSON.stringify({ label, at: new Date().toISOString(), canvas: c }));
-    return { version, label };
+    /** The design canvas id. */ tabId: string;
+    /** The version's name. */ name?: string;
+}): Promise<{ version: number; committed: boolean }> {
+    const tab = await needTab(ctx, opts.tabId);
+    const { row, committed } = await store.commitTab(ctx, tab.id, "agent", opts.name ?? null);
+    return { version: row.version, committed };
 }

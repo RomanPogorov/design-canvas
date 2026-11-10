@@ -1,23 +1,15 @@
-import { readdir } from "node:fs/promises";
-import { join } from "node:path";
+import * as store from "../../sdk/store.ts";
+import { needTab } from "../../sdk/agent.ts";
 
 /**
- * Lists the saved versions of a design canvas, newest first: number, label, time, artboard count.
- *
- * Use to find a version to read, compare or bring back (designCanvas.restore).
- * @param opts.name The canvas name.
+ * Lists the saved versions of a design canvas (number, name, who, when) and the draft's edits since the last one.
+ * @param opts.tabId The design canvas id.
  */
 export default async function (ctx: Context, _session: Session | null, opts: {
-    /** The canvas name. */
-    name: string;
-}): Promise<Array<{ version: number; label: string; at: string; boards: number }>> {
-    const p = await ctx.fns.designCanvas.paths({ name: opts.name });
-    const out: Array<{ version: number; label: string; at: string; boards: number }> = [];
-    for (const n of await readdir(p.versions).catch(() => [] as string[])) {
-        const m = /^(\d{4,})\.json$/.exec(n);
-        if (!m) continue;
-        const raw: any = await Bun.file(join(p.versions, n)).json().catch(() => null);
-        if (raw) out.push({ version: Number(m[1]), label: String(raw.label ?? ""), at: String(raw.at ?? ""), boards: Object.keys(raw.canvas?.boards ?? {}).length });
-    }
-    return out.sort((a, b) => b.version - a.version);
+    /** The design canvas id. */ tabId: string;
+}): Promise<{ current: number; draftEdits: number; versions: Array<{ v: number; name: string | null; author: string; at: string }>; draft: Array<{ n: number; note: string | null; author: string }> }> {
+    const tab = await needTab(ctx, opts.tabId);
+    const vs = await store.versions(ctx, tab.id);
+    const ed = await store.draftEdits(ctx, tab.id);
+    return { current: tab.version, draftEdits: tab.draft_edits, versions: vs.map((v) => ({ v: v.v, name: v.note, author: v.author, at: new Date(v.created_at).toISOString() })), draft: ed.map((e) => ({ n: e.n, note: e.note, author: e.author })) };
 }
