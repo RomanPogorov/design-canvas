@@ -1,0 +1,8 @@
+{
+  "label": "Design canvas",
+  "href": "/designCanvas",
+  "hint": "Browse design canvases and open their artboards",
+  "icon": "ph-pen-nib",
+  "group": "Pages",
+  "order": 12
+}

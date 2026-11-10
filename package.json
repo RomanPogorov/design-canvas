@@ -1,0 +1,13 @@
+{
+  "name": "design-canvas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "procs": {
+    "src": "src",
+    "label": "Design canvas",
+    "icon": "ph-pen-nib",
+    "description": "An infinite canvas of HTML artboards for designing screens and their states in rows by flow: pages, data templates, components, comments, stickies, in-place text editing and named versions; the agent plans, draws and edits artboards through designCanvas functions.",
+    "configuration": { "settings": ["designCanvas.root"] }
+  }
+}
