@@ -46,7 +46,7 @@ overwrites (409). The editor polls `…/state` every 2 s, so the agent's writes 
 Into the plugin host (`PLUGIN_HOST`, e.g. `~/.hyper/plugins`):
 
 ```bash
-cd ~/.hyper/plugins && bun add github:<owner>/design-canvas#v0.1.0
+cd ~/.hyper/plugins && bun add github:RomanPogorov/design-canvas#v0.1.0
 ```
 
 or from the catalog once a listing has it: `plugins.install({ name: "design-canvas" })` (preview, then confirm with
@@ -60,7 +60,7 @@ Listing entry — `hyper-code-harness/plugins/plugins/design-canvas.json` (or th
   "label": "Design canvas",
   "icon": "ph-pen-nib",
   "description": "An infinite canvas of HTML artboards for designing screens and their states in rows by flow: pages, data templates, components, comments, stickies, in-place text editing and named versions; the agent plans, draws and edits artboards through designCanvas functions.",
-  "source": "github:<owner>/design-canvas"
+  "source": "github:RomanPogorov/design-canvas"
 }
 ```
 
